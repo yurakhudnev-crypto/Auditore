@@ -1,16 +1,16 @@
 {
   "catalogUrl": "",
   "googleForm": {
-    "url": "",
+    "url": "https://docs.google.com/forms/d/e/1FAIpQLSfa7Gury09w68M5e-cZwYEy81GOS4dSOUMlW2E4GqJM8N0hKg/viewform?usp=dialog",
     "entryIds": {
-      "firstName": "",
-      "lastName": "",
-      "className": "",
-      "songTitle": "",
-      "score": "",
-      "totalGaps": "",
-      "percentage": "",
-      "translations": ""
+      "firstName": "entry.289672559",
+      "lastName": "entry.1383272132",
+      "className": "entry.503022807",
+      "songTitle": "entry.1718209224",
+      "score": "entry.1581446741",
+      "totalGaps": "entry.108545916",
+      "percentage": "entry.1923482076",
+      "translations": "entry.527398171"
     }
   }
 }
