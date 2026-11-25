@@ -2,12 +2,20 @@ import { useState, useEffect } from 'react';
 import TeacherWorkspace from './components/TeacherWorkspace';
 import StudentApp from './components/StudentApp';
 import ResultsPage from './components/ResultsPage';
+import AuthPage from './components/AuthPage';
+import TeacherDashboard from './components/TeacherDashboard';
+import { AuthProvider, useAuth } from './contexts/AuthContext';
 
-type AppMode = 'home' | 'teacher' | 'student' | 'results';
+type AppMode = 'home' | 'teacher' | 'student' | 'results' | 'auth' | 'dashboard';
 
-function App() {
+function AppContent() {
   const [mode, setMode] = useState<AppMode>('home');
   const [isStudentMode, setIsStudentMode] = useState(false);
+  const auth = useAuth();
+  
+  // Безопасно извлекаем значения из контекста
+  const user = auth?.user ?? null;
+  const loading = auth?.loading ?? true;
 
   useEffect(() => {
     // Проверяем оба варианта: ?student и #student
@@ -19,6 +27,24 @@ function App() {
       setMode('student');
     }
   }, []);
+
+  // Если пользователь вошёл и находится на странице учителя, показываем дашборд
+  useEffect(() => {
+    if (user && mode === 'teacher') {
+      setMode('dashboard');
+    }
+  }, [user, mode]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen ipod-metal flex items-center justify-center">
+        <div className="text-center">
+          <div className="text-5xl mb-4 animate-pulse">...</div>
+          <p className="text-lg font-bold tracking-widest text-[#1A1A1A]">ЗАГРУЗКА...</p>
+        </div>
+      </div>
+    );
+  }
 
   if (isStudentMode) {
     return <StudentApp onBack={() => {}} isStudentOnly={true} />;
@@ -36,6 +62,14 @@ function App() {
     return <ResultsPage onBack={() => setMode('home')} />;
   }
 
+  if (mode === 'auth') {
+    return <AuthPage onBack={() => setMode('home')} />;
+  }
+
+  if (mode === 'dashboard') {
+    return <TeacherDashboard onBack={() => setMode('home')} />;
+  }
+
   return (
     <div className="min-h-screen ipod-metal">
       {/* Navigation Bar */}
@@ -44,9 +78,27 @@ function App() {
           <h1 className="text-2xl font-bold tracking-tight text-[#1A1A1A]">
             AUDITORE
           </h1>
-          <div className="flex items-center gap-2">
-            <div className="h-2 w-2 rounded-full bg-[#0066CC]"></div>
-            <span className="text-xs font-medium text-[#666666]">v1.0</span>
+          <div className="flex items-center gap-4">
+            {user ? (
+              <>
+                <span className="text-xs font-bold tracking-widest text-[#666666]">
+                  {user.email}
+                </span>
+                <button
+                  onClick={() => setMode('dashboard')}
+                  className="ipod-button rounded-lg px-4 py-2 text-xs font-bold tracking-widest text-white transition-all hover:-translate-y-0.5"
+                >
+                  КАБИНЕТ
+                </button>
+              </>
+            ) : (
+              <button
+                onClick={() => setMode('auth')}
+                className="ipod-button rounded-lg px-4 py-2 text-xs font-bold tracking-widest text-white transition-all hover:-translate-y-0.5"
+              >
+                ВОЙТИ
+              </button>
+            )}
           </div>
         </div>
       </div>
@@ -187,6 +239,14 @@ function App() {
         </footer>
       </div>
     </div>
+  );
+}
+
+function App() {
+  return (
+    <AuthProvider>
+      <AppContent />
+    </AuthProvider>
   );
 }
 
